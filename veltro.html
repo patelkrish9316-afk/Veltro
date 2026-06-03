@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Veltro — Web Agency</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --gold:#C9A84C;--gold-light:#E8CC80;--gold-dim:#8A6E2F;
+  --dark:#0D0C0A;--dark2:#141210;--dark3:#1C1A16;--dark4:#252219;
+  --text:#F0EAD6;--text-muted:#7A7060;--border:rgba(201,168,76,0.18);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--text);overflow-x:hidden;}
+
+/* ── PAGE SYSTEM ── */
+.page{display:none;min-height:100vh;}
+.page.active{display:block;}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.4rem 3rem;
+  background:rgba(13,12,10,0.9);
+  backdrop-filter:blur(12px);
+  border-bottom:0.5px solid var(--border);
+}
+.logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.7rem;font-weight:600;
+  letter-spacing:0.18em;color:var(--gold);
+  text-transform:uppercase;cursor:pointer;
+}
+.nav-links{display:flex;gap:2.2rem;list-style:none;}
+.nav-links a{
+  font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--text-muted);text-decoration:none;transition:color .3s;cursor:pointer;
+}
+.nav-links a:hover{color:var(--gold);}
+.nav-cta{
+  font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;
+  padding:0.55rem 1.4rem;
+  border:0.5px solid var(--gold-dim);
+  color:var(--gold);background:transparent;
+  cursor:pointer;text-decoration:none;
+  transition:background .3s,color .3s;font-family:'DM Sans',sans-serif;
+}
+.nav-cta:hover{background:var(--gold);color:var(--dark);}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;padding:8rem 2rem 4rem;
+  position:relative;overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 40%,rgba(201,168,76,0.07) 0%,transparent 70%),
+    radial-gradient(ellipse 30% 30% at 20% 80%,rgba(201,168,76,0.04) 0%,transparent 60%);
+}
+.hero-line{width:1px;height:80px;background:linear-gradient(to bottom,transparent,var(--gold-dim));margin:0 auto 2.5rem;opacity:0.6;}
+.hero-tag{font-size:0.7rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1.8rem;}
+.hero h1{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(3.5rem,8vw,7rem);
+  font-weight:300;line-height:1.05;
+  letter-spacing:-0.01em;color:var(--text);margin-bottom:0.3rem;
+}
+.hero h1 em{font-style:italic;color:var(--gold);}
+.hero-sub{
+  font-size:0.95rem;font-weight:300;color:var(--text-muted);
+  letter-spacing:0.04em;max-width:440px;margin:1.6rem auto 3rem;line-height:1.8;
+}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
+
+.btn-primary{
+  font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;
+  padding:0.85rem 2.2rem;background:var(--gold);color:var(--dark);
+  border:none;cursor:pointer;font-family:'DM Sans',sans-serif;
+  font-weight:500;transition:opacity .3s;
+}
+.btn-primary:hover{opacity:0.85;}
+.btn-secondary{
+  font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;
+  padding:0.85rem 2.2rem;background:transparent;color:var(--text-muted);
+  border:0.5px solid var(--border);cursor:pointer;font-family:'DM Sans',sans-serif;
+  transition:color .3s,border-color .3s;
+}
+.btn-secondary:hover{color:var(--gold);border-color:var(--gold-dim);}
+
+/* ── MARQUEE ── */
+.marquee-wrap{
+  overflow:hidden;padding:1.6rem 0;
+  border-top:0.5px solid var(--border);
+  border-bottom:0.5px solid var(--border);
+  background:var(--dark2);
+}
+.marquee-track{display:flex;gap:3rem;white-space:nowrap;animation:marquee 22s linear infinite;}
+.marquee-item{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1rem;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--gold-dim);flex-shrink:0;
+}
+.marquee-dot{color:var(--gold);margin:0 0.5rem;}
+@keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* ── STATS ── */
+.stats-bar{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  background:var(--dark2);
+  border-top:0.5px solid var(--border);
+  border-bottom:0.5px solid var(--border);
+}
+.stat-item{padding:2.5rem 2rem;text-align:center;border-right:0.5px solid var(--border);}
+.stat-item:last-child{border-right:none;}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;color:var(--gold);line-height:1;margin-bottom:0.4rem;}
+.stat-label{font-size:0.7rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-muted);}
+
+/* ── SECTIONS ── */
+.section{padding:6rem 3rem;max-width:1100px;margin:0 auto;}
+.section-label{font-size:0.68rem;letter-spacing:0.28em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:300;color:var(--text);line-height:1.15;margin-bottom:3.5rem;}
+.section-title em{font-style:italic;color:var(--gold);}
+
+/* ── SERVICES ── */
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--border);border:0.5px solid var(--border);}
+.service-card{background:var(--dark2);padding:2.2rem 1.8rem;transition:background .3s;cursor:default;}
+.service-card:hover{background:var(--dark3);}
+.service-num{font-size:0.65rem;letter-spacing:0.2em;color:var(--gold-dim);margin-bottom:1.2rem;font-family:'Cormorant Garamond',serif;}
+.service-card h3{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:400;color:var(--text);margin-bottom:0.8rem;letter-spacing:0.03em;}
+.service-card p{font-size:0.82rem;color:var(--text-muted);line-height:1.8;font-weight:300;}
+
+/* ── TEAM ── */
+.team-section{background:var(--dark2);padding:6rem 0;}
+.team-inner{max-width:1100px;margin:0 auto;padding:0 3rem;}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1.5rem;margin-top:3rem;}
+.member-card{text-align:center;padding:2rem 1rem;border:0.5px solid var(--border);background:var(--dark3);transition:border-color .3s;}
+.member-card:hover{border-color:var(--gold-dim);}
+.member-avatar{
+  width:64px;height:64px;border-radius:50%;background:var(--dark4);
+  border:0.5px solid var(--gold-dim);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 1rem;
+  font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--gold);letter-spacing:0.05em;
+}
+.member-name{font-size:0.88rem;font-weight:500;color:var(--text);margin-bottom:0.3rem;letter-spacing:0.04em;}
+.member-role{font-size:0.72rem;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;}
+
+/* ── PORTFOLIO ── */
+.portfolio-section{padding:6rem 0;max-width:1000px;margin:0 auto;padding-left:2rem;padding-right:2rem;}
+.canvas-section{position:relative;height:320px;overflow:hidden;margin:2rem 0;}
+#three-canvas{width:100%;height:100%;display:block;cursor:grab;}
+#three-canvas:active{cursor:grabbing;}
+.canvas-overlay{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,var(--dark) 0%,transparent 15%,transparent 85%,var(--dark) 100%);}
+.canvas-label{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold-dim);display:flex;align-items:center;gap:0.5rem;}
+.canvas-label::before,.canvas-label::after{content:'';width:32px;height:0.5px;background:var(--gold-dim);}
+
+.project-card{position:relative;overflow:hidden;border:0.5px solid var(--border);background:var(--dark2);margin-bottom:1.5rem;cursor:pointer;transition:border-color .4s,transform .4s;}
+.project-card:hover{border-color:var(--gold-dim);transform:translateY(-4px);}
+.card-inner{display:flex;align-items:stretch;min-height:220px;}
+.card-visual{width:320px;flex-shrink:0;position:relative;overflow:hidden;background:var(--dark3);}
+.card-canvas{width:100%;height:100%;display:block;}
+.card-content{padding:2.2rem 2rem;flex:1;display:flex;flex-direction:column;justify-content:space-between;}
+.card-meta{display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;flex-wrap:wrap;}
+.card-num{font-family:'Cormorant Garamond',serif;font-size:0.75rem;color:var(--gold-dim);letter-spacing:0.15em;}
+.card-tag{font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;padding:0.25rem 0.7rem;border:0.5px solid var(--border);color:var(--text-muted);}
+.card-badge{font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.25rem 0.7rem;background:rgba(201,168,76,0.12);border:0.5px solid var(--gold-dim);color:var(--gold);}
+.card-title{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:300;color:var(--text);margin-bottom:0.8rem;line-height:1.15;}
+.card-desc{font-size:0.82rem;color:var(--text-muted);line-height:1.8;font-weight:300;flex:1;margin-bottom:1.5rem;}
+.card-link{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  font-size:0.72rem;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--gold);text-decoration:none;
+  border-bottom:0.5px solid var(--gold-dim);padding-bottom:0.2rem;
+  transition:letter-spacing .3s,color .3s;width:fit-content;
+}
+.card-link:hover{letter-spacing:0.2em;color:var(--gold-light);}
+.card-link svg{width:12px;height:12px;transition:transform .3s;}
+.card-link:hover svg{transform:translate(3px,-3px);}
+.card-shimmer{position:absolute;inset:0;pointer-events:none;background:linear-gradient(135deg,transparent 40%,rgba(201,168,76,0.04) 50%,transparent 60%);transform:translateX(-100%);transition:transform .6s;}
+.project-card:hover .card-shimmer{transform:translateX(100%);}
+
+/* ── CTA ── */
+.cta-section{text-align:center;padding:8rem 2rem;position:relative;overflow:hidden;}
+.cta-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 60% at 50% 50%,rgba(201,168,76,0.06) 0%,transparent 70%);}
+.cta-section h2{font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,5vw,4rem);font-weight:300;color:var(--text);line-height:1.1;margin-bottom:1.2rem;}
+.cta-section h2 em{color:var(--gold);font-style:italic;}
+.cta-section p{font-size:0.9rem;color:var(--text-muted);margin-bottom:2.5rem;letter-spacing:0.04em;}
+
+/* ── FOOTER ── */
+footer{border-top:0.5px solid var(--border);padding:2rem 3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;background:var(--dark2);}
+.footer-logo{font-family:'Cormorant Garamond',serif;font-size:1.1rem;letter-spacing:0.18em;color:var(--gold-dim);text-transform:uppercase;}
+.footer-copy{font-size:0.72rem;color:var(--text-muted);letter-spacing:0.06em;}
+.footer-links{display:flex;gap:1.5rem;}
+.footer-links a{font-size:0.72rem;color:var(--text-muted);text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;transition:color .3s;cursor:pointer;}
+.footer-links a:hover{color:var(--gold);}
+
+/* ── ANIMATIONS ── */
+.fade-in{opacity:0;transform:translateY(24px);animation:fadeUp 0.8s ease forwards;}
+.fade-in:nth-child(2){animation-delay:.15s;}
+.fade-in:nth-child(3){animation-delay:.3s;}
+.fade-in:nth-child(4){animation-delay:.45s;}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0);}}
+
+/* ── CONTACT PAGE ── */
+.contact-page{background:var(--dark);}
+.contact-hero{text-align:center;padding:10rem 2rem 4rem;position:relative;}
+.contact-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 40%,rgba(201,168,76,0.06) 0%,transparent 70%);}
+.contact-hero .hero-line{margin-bottom:2rem;}
+.contact-inner{max-width:780px;margin:0 auto;padding:2rem 2rem 6rem;}
+
+.form-tag{font-size:0.68rem;letter-spacing:0.28em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;}
+.form-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:300;line-height:1.1;margin-bottom:0.6rem;color:var(--text);}
+.form-title em{font-style:italic;color:var(--gold);}
+.form-subtitle{font-size:0.85rem;color:var(--text-muted);line-height:1.8;margin-bottom:3rem;max-width:460px;}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+.form-group{display:flex;flex-direction:column;gap:0.5rem;}
+.form-group.full{grid-column:1/-1;}
+label{font-size:0.7rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);}
+
+input[type=text],input[type=email],input[type=tel],select,textarea{
+  width:100%;background:var(--dark2);border:0.5px solid var(--border);
+  color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;
+  padding:0.85rem 1rem;outline:none;transition:border-color .3s;
+  appearance:none;-webkit-appearance:none;
+}
+input[type=text]:focus,input[type=email]:focus,input[type=tel]:focus,select:focus,textarea:focus{border-color:var(--gold-dim);}
+input::placeholder,textarea::placeholder{color:var(--text-muted);font-size:0.82rem;}
+textarea{resize:vertical;min-height:130px;line-height:1.7;}
+
+select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A6E2F' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.5rem;cursor:pointer;
+}
+select option{background:var(--dark2);color:var(--text);}
+
+.budget-pills{display:flex;flex-wrap:wrap;gap:0.5rem;}
+.pill{
+  font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;
+  padding:0.45rem 1rem;border:0.5px solid var(--border);
+  color:var(--text-muted);background:transparent;cursor:pointer;
+  transition:border-color .3s,color .3s,background .3s;font-family:'DM Sans',sans-serif;
+}
+.pill:hover{border-color:var(--gold-dim);color:var(--gold);}
+.pill.active{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,0.08);}
+
+.form-divider{grid-column:1/-1;height:0.5px;background:var(--border);margin:0.4rem 0;}
+
+.submit-row{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;margin-top:0.8rem;flex-wrap:wrap;gap:1rem;}
+.submit-note{font-size:0.72rem;color:var(--text-muted);letter-spacing:0.04em;}
+.submit-note span{color:var(--gold);}
+.btn-submit{
+  font-size:0.78rem;letter-spacing:0.14em;text-transform:uppercase;
+  padding:0.9rem 2.6rem;background:var(--gold);color:var(--dark);
+  border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;
+  transition:opacity .3s,transform .2s;
+}
+.btn-submit:hover{opacity:0.88;}
+.btn-submit:active{transform:scale(0.98);}
+
+.error-border{border-color:#8A3030 !important;}
+
+.success-msg{
+  display:none;grid-column:1/-1;
+  text-align:center;padding:3rem 1rem;
+  border:0.5px solid var(--border);background:var(--dark2);
+}
+.success-msg.show{display:block;}
+.success-icon{font-size:2rem;color:var(--gold);margin-bottom:1rem;}
+.success-title{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;margin-bottom:0.6rem;color:var(--text);}
+.success-title em{color:var(--gold);font-style:italic;}
+.success-sub{font-size:0.85rem;color:var(--text-muted);line-height:1.8;margin-bottom:1.5rem;}
+.back-btn{
+  font-size:0.75rem;letter-spacing:0.14em;text-transform:uppercase;
+  padding:0.7rem 2rem;border:0.5px solid var(--gold-dim);
+  color:var(--gold);background:transparent;cursor:pointer;
+  font-family:'DM Sans',sans-serif;transition:background .3s,color .3s;
+}
+.back-btn:hover{background:var(--gold);color:var(--dark);}
+
+.info-strip{
+  grid-column:1/-1;
+  display:grid;grid-template-columns:repeat(3,1fr);
+  border:0.5px solid var(--border);margin-bottom:0.8rem;
+}
+.info-item{padding:1.2rem 1rem;border-right:0.5px solid var(--border);text-align:center;}
+.info-item:last-child{border-right:none;}
+.info-icon{font-size:1.1rem;color:var(--gold);margin-bottom:0.4rem;}
+.info-label{font-size:0.65rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);}
+.info-val{font-size:0.82rem;color:var(--text);margin-top:0.2rem;}
+
+/* ── WHATSAPP FLOAT ── */
+.wa-float{
+  position:fixed;bottom:2rem;right:2rem;z-index:999;
+  width:52px;height:52px;border-radius:50%;
+  background:#25D366;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  box-shadow:0 4px 20px rgba(37,211,102,0.35);
+  transition:transform .3s,box-shadow .3s;
+}
+.wa-float:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(37,211,102,0.5);}
+.wa-float svg{width:26px;height:26px;fill:#fff;}
+.wa-tooltip{
+  position:absolute;right:62px;
+  background:var(--dark3);color:var(--text);
+  font-size:0.72rem;letter-spacing:0.08em;white-space:nowrap;
+  padding:0.4rem 0.9rem;border:0.5px solid var(--border);
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.wa-float:hover .wa-tooltip{opacity:1;}
+
+@media(max-width:700px){
+  nav{padding:1.2rem 1.4rem;}
+  .nav-links{display:none;}
+  .section{padding:4rem 1.4rem;}
+  .team-inner{padding:0 1.4rem;}
+  .card-inner{flex-direction:column;}
+  .card-visual{width:100%;height:180px;}
+  .form-grid{grid-template-columns:1fr;}
+  .form-group.full{grid-column:1;}
+  .submit-row{grid-column:1;}
+  .info-strip{grid-template-columns:1fr;}
+  .info-item{border-right:none;border-bottom:0.5px solid var(--border);}
+  .info-item:last-child{border-bottom:none;}
+  footer{flex-direction:column;text-align:center;}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════
+     SHARED NAV
+════════════════════════════════ -->
+<nav>
+  <div class="logo" onclick="showPage('home')">Veltro</div>
+  <ul class="nav-links">
+    <li><a onclick="showPage('home');scrollTo('services')">Services</a></li>
+    <li><a onclick="showPage('home');scrollTo('team')">Team</a></li>
+    <li><a onclick="showPage('home');scrollTo('portfolio')">Work</a></li>
+    <li><a onclick="showPage('contact')">Contact</a></li>
+  </ul>
+  <button class="nav-cta" onclick="showPage('contact')">Start a Project</button>
+</nav>
+
+<!-- ════════════════════════════════
+     HOME PAGE
+════════════════════════════════ -->
+<div id="page-home" class="page active">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div style="position:relative;z-index:1;width:100%">
+      <div class="hero-line fade-in"></div>
+      <p class="hero-tag fade-in">Web Design &amp; Development Agency</p>
+      <h1 class="fade-in">We Build <em>Premium</em><br/>Digital Experiences</h1>
+      <p class="hero-sub fade-in">Four specialists. One shared obsession — crafting websites that elevate your brand and drive real results.</p>
+      <div class="hero-btns fade-in">
+        <button class="btn-primary" onclick="showPage('contact')">Get in Touch</button>
+        <button class="btn-secondary" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">Our Services</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span class="marquee-item">Web Design<span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">Brand Identity<span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">E-Commerce<span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">UI/UX Design<span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">SEO Optimization<span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">Web Development<span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">Web Design<span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">Brand Identity<span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">E-Commerce<span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">UI/UX Design<span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">SEO Optimization<span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">Web Development<span class="marquee-dot">✦</span></span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-num">4</div><div class="stat-label">Expert Team Members</div></div>
+    <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Client Satisfaction</div></div>
+    <div class="stat-item"><div class="stat-num">Fast</div><div class="stat-label">Turnaround Time</div></div>
+    <div class="stat-item"><div class="stat-num">∞</div><div class="stat-label">Creative Ambition</div></div>
+  </div>
+
+  <!-- SERVICES -->
+  <section class="section" id="services">
+    <p class="section-label">What We Do</p>
+    <h2 class="section-title">Services Built for<br/><em>Ambitious Brands</em></h2>
+    <div class="services-grid">
+      <div class="service-card"><div class="service-num">01</div><h3>Web Design</h3><p>Bespoke, visually striking websites tailored to your brand identity and business goals.</p></div>
+      <div class="service-card"><div class="service-num">02</div><h3>Web Development</h3><p>Clean, fast, and scalable code — built to perform flawlessly across all devices.</p></div>
+      <div class="service-card"><div class="service-num">03</div><h3>E-Commerce</h3><p>Conversion-optimized online stores that turn visitors into loyal customers.</p></div>
+      <div class="service-card"><div class="service-num">04</div><h3>Brand Identity</h3><p>Logos, palettes, and visual systems that make your brand impossible to forget.</p></div>
+      <div class="service-card"><div class="service-num">05</div><h3>SEO &amp; Growth</h3><p>Strategic optimization so your website gets found by the right people.</p></div>
+      <div class="service-card"><div class="service-num">06</div><h3>Maintenance</h3><p>Ongoing support and updates so your site stays fast, secure, and current.</p></div>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <div class="team-section" id="team">
+    <div class="team-inner">
+      <p class="section-label">The People</p>
+      <h2 class="section-title">Four Minds.<br/><em>One Vision.</em></h2>
+      <div class="team-grid">
+        <div class="member-card"><div class="member-avatar">KP</div><div class="member-name">Krish Patel</div><div class="member-role">Co-Founder &amp; Lead Dev</div></div>
+        <div class="member-card"><div class="member-avatar">NN</div><div class="member-name">Neel Nogia</div><div class="member-role">Co-Founder &amp; Designer</div></div>
+        <div class="member-card"><div class="member-avatar">RP</div><div class="member-name">Ruchit Patel</div><div class="member-role">UI/UX Designer</div></div>
+        <div class="member-card"><div class="member-avatar">PP</div><div class="member-name">Preet Prajapati</div><div class="member-role">Web Developer</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PORTFOLIO -->
+  <div id="portfolio" style="padding-top:2rem;">
+    <div class="portfolio-section">
+      <p class="section-label" style="text-align:center">Selected Work</p>
+      <h2 class="section-title" style="text-align:center;margin-bottom:2rem;">Work That<br/><em>Speaks</em> for Itself</h2>
+
+      <div class="canvas-section">
+        <canvas id="three-canvas"></canvas>
+        <div class="canvas-overlay"></div>
+        <div class="canvas-label">Interactive 3D — Drag to Explore</div>
+      </div>
+
+      <!-- Project 1 -->
+      <div class="project-card" onclick="window.open('https://mood-muse-buddy.vercel.app/?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAb21jcASJ721leHRuA2FlbQIxMQBzcnRjBmFwcF9pZA81NjcwNjczNDMzNTI0MjcAAae22BKM3zpDMcWJGLCOHiQpgAaGJLwDhG-6HxdePx7jYAUzgHkl9HkO3W6d6g_aem_crg313TChMsML1jfWhUL_g','_blank')">
+        <div class="card-shimmer"></div>
+        <div class="card-inner">
+          <div class="card-visual"><canvas class="card-canvas" id="canvas-mental"></canvas></div>
+          <div class="card-content">
+            <div>
+              <div class="card-meta">
+                <span class="card-num">01 / 02</span>
+                <span class="card-tag">AI Product</span>
+                <span class="card-tag">Web App</span>
+              </div>
+              <div class="card-title">Mental Health<br/>Buddy AI</div>
+              <p class="card-desc">An empathetic AI companion designed to support mental wellness. Offers guided journaling, mood tracking, and gentle conversations — available 24/7 with a calm, human-centered interface.</p>
+            </div>
+            <a class="card-link" href="https://mood-muse-buddy.vercel.app/?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAb21jcASJ721leHRuA2FlbQIxMQBzcnRjBmFwcF9pZA81NjcwNjczNDMzNTI0MjcAAae22BKM3zpDMcWJGLCOHiQpgAaGJLwDhG-6HxdePx7jYAUzgHkl9HkO3W6d6g_aem_crg313TChMsML1jfWhUL_g" onclick="event.stopPropagation()" target="_blank">
+              View Live Project
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 11L11 1M11 1H4M11 1V8"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project 2 -->
+      <div class="project-card" onclick="window.open('https://smartghat.vercel.app/','_blank')">
+        <div class="card-shimmer"></div>
+        <div class="card-inner">
+          <div class="card-visual"><canvas class="card-canvas" id="canvas-shape"></canvas></div>
+          <div class="card-content">
+            <div>
+              <div class="card-meta">
+                <span class="card-num">02 / 02</span>
+                <span class="card-tag">Hackathon</span>
+                <span class="card-badge">🏆 3rd Place Winner</span>
+              </div>
+              <div class="card-title">Shape Curve</div>
+              <p class="card-desc">Award-winning hackathon project bringing fluid, interactive curve-based design tools to the browser. Built in 48 hours — recognized for innovation, performance, and stunning visual execution.</p>
+            </div>
+            <a class="card-link" href="https://smartghat.vercel.app/" onclick="event.stopPropagation()" target="_blank">
+              View Live Project
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 11L11 1M11 1H4M11 1V8"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <div style="position:relative;z-index:1;">
+      <h2>Ready to Build<br/>Something <em>Remarkable?</em></h2>
+      <p>Let's talk about your project. No obligations, just a conversation.</p>
+      <button class="btn-primary" onclick="showPage('contact')">Get in Touch →</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">Veltro</div>
+    <div class="footer-copy">© 2026 Veltro. All rights reserved.</div>
+    <div class="footer-links">
+      <a onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">Services</a>
+      <a onclick="document.getElementById('team').scrollIntoView({behavior:'smooth'})">Team</a>
+      <a onclick="document.getElementById('portfolio').scrollIntoView({behavior:'smooth'})">Work</a>
+      <a onclick="showPage('contact')">Contact</a>
+    </div>
+  </footer>
+
+</div><!-- end home page -->
+
+
+<!-- ════════════════════════════════
+     CONTACT PAGE
+════════════════════════════════ -->
+<div id="page-contact" class="page contact-page">
+
+  <div class="contact-hero">
+    <div style="position:relative;z-index:1;">
+      <div class="hero-line"></div>
+      <p class="hero-tag">Get in Touch</p>
+      <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2.8rem,6vw,5rem);font-weight:300;line-height:1.05;color:var(--text);">
+        Tell Us About<br/><em style="font-style:italic;color:var(--gold);">Your Project</em>
+      </h1>
+      <p style="font-size:0.9rem;color:var(--text-muted);margin-top:1.2rem;line-height:1.8;">Fill in the details below and we'll get back to you within 24 hours.</p>
+    </div>
+  </div>
+
+  <div class="contact-inner">
+    <div class="form-grid" id="form-wrap">
+
+      <div class="info-strip">
+        <div class="info-item">
+          <div class="info-icon">✉</div>
+          <div class="info-label">Email us</div>
+          <div class="info-val">hello@veltro.co</div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">⚡</div>
+          <div class="info-label">Response time</div>
+          <div class="info-val">Within 24 hours</div>
+        </div>
+        <div class="info-item" style="cursor:pointer;" onclick="window.open('https://wa.me/918780006231.','_blank')">
+          <div class="info-icon">💬</div>
+          <div class="info-label">WhatsApp us</div>
+          <div class="info-val" style="color:var(--gold);">Chat directly →</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="fname">Full Name</label>
+        <input type="text" id="fname" placeholder="Your full name"/>
+      </div>
+      <div class="form-group">
+        <label for="femail">Email Address</label>
+        <input type="email" id="femail" placeholder="you@company.com"/>
+      </div>
+      <div class="form-group">
+        <label for="fphone">Phone Number</label>
+        <input type="tel" id="fphone" placeholder="+91 00000 00000"/>
+      </div>
+      <div class="form-group">
+        <label for="fcompany">Company / Brand Name</label>
+        <input type="text" id="fcompany" placeholder="Your company (optional)"/>
+      </div>
+
+      <div class="form-divider"></div>
+
+      <div class="form-group full">
+        <label for="fservice">Service You Need</label>
+        <select id="fservice">
+          <option value="" disabled selected>Select a service...</option>
+          <option>Web Design</option>
+          <option>Web Development</option>
+          <option>E-Commerce Store</option>
+          <option>Brand Identity</option>
+          <option>SEO &amp; Growth</option>
+          <option>Full Package (Design + Dev)</option>
+          <option>Other / Not Sure</option>
+        </select>
+      </div>
+
+      <div class="form-group full">
+        <label>Budget Range</label>
+        <div class="budget-pills">
+          <button class="pill" onclick="selectBudget(this)">Under ₹25K</button>
+          <button class="pill" onclick="selectBudget(this)">₹25K – ₹75K</button>
+          <button class="pill" onclick="selectBudget(this)">₹75K – ₹1.5L</button>
+          <button class="pill" onclick="selectBudget(this)">₹1.5L – ₹3L</button>
+          <button class="pill" onclick="selectBudget(this)">₹3L+</button>
+          <button class="pill" onclick="selectBudget(this)">Let's discuss</button>
+        </div>
+      </div>
+
+      <div class="form-group full">
+        <label for="ftimeline">Timeline</label>
+        <select id="ftimeline">
+          <option value="" disabled selected>When do you need it?</option>
+          <option>ASAP (1–2 weeks)</option>
+          <option>1 Month</option>
+          <option>2–3 Months</option>
+          <option>Flexible</option>
+        </select>
+      </div>
+
+      <div class="form-group full">
+        <label for="fmessage">Tell Us About Your Project</label>
+        <textarea id="fmessage" placeholder="Describe your vision, goals, any references you like, or anything else we should know..."></textarea>
+      </div>
+
+      <div class="submit-row">
+        <p class="submit-note">We reply within <span>24 hours</span> — no spam, ever.</p>
+        <button class="btn-submit" onclick="submitForm()">Send Message →</button>
+      </div>
+
+      <div class="success-msg" id="success-msg">
+        <div class="success-icon">✦</div>
+        <div class="success-title">Message <em>Received</em></div>
+        <p class="success-sub">Thanks for reaching out! The Veltro team will review your details and get back to you within 24 hours.<br/><br/>Want a faster reply? Chat with us directly on WhatsApp.</p>
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:1.4rem;">
+          <button class="back-btn" onclick="showPage('home')">← Back to Home</button>
+          <a href="https://wa.me/918780006231" target="_blank" style="font-size:0.75rem;letter-spacing:0.14em;text-transform:uppercase;padding:0.7rem 2rem;background:#25D366;color:#fff;text-decoration:none;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:0.5rem;">💬 WhatsApp Us</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-logo">Veltro</div>
+    <div class="footer-copy">© 2026 Veltro. All rights reserved.</div>
+    <div class="footer-links">
+      <a onclick="showPage('home')">Home</a>
+      <a onclick="showPage('home');setTimeout(()=>document.getElementById('services').scrollIntoView({behavior:'smooth'}),100)">Services</a>
+      <a onclick="showPage('home');setTimeout(()=>document.getElementById('team').scrollIntoView({behavior:'smooth'}),100)">Team</a>
+    </div>
+  </footer>
+
+</div><!-- end contact page -->
+
+
+<!-- WHATSAPP FLOAT -->
+<div class="wa-float" onclick="window.open('https://wa.me/918780006231','_blank')" title="Chat on WhatsApp">
+  <div class="wa-tooltip">Chat on WhatsApp</div>
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</div>
+
+<script>
+// ── PAGE ROUTING ──────────────────────────────────────────
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+  if(name === 'home') initHomeThree();
+}
+
+function scrollTo(id) {
+  setTimeout(() => {
+    const el = document.getElementById(id);
+    if(el) el.scrollIntoView({behavior:'smooth'});
+  }, 50);
+}
+
+// ── FORM ─────────────────────────────────────────────────
+function selectBudget(el) {
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+}
+
+async function submitForm() {
+  const nameEl    = document.getElementById('fname');
+  const emailEl   = document.getElementById('femail');
+  const phoneEl   = document.getElementById('fphone');
+  const companyEl = document.getElementById('fcompany');
+  const serviceEl = document.getElementById('fservice');
+  const timelineEl= document.getElementById('ftimeline');
+  const msgEl     = document.getElementById('fmessage');
+  const submitBtn = document.querySelector('.btn-submit');
+
+  nameEl.classList.remove('error-border');
+  emailEl.classList.remove('error-border');
+  if(!nameEl.value.trim()) { nameEl.classList.add('error-border'); nameEl.focus(); return; }
+  if(!emailEl.value.trim()) { emailEl.classList.add('error-border'); emailEl.focus(); return; }
+
+  const activePill = document.querySelector('.pill.active');
+  const budget = activePill ? activePill.textContent : 'Not selected';
+
+  submitBtn.textContent = 'Sending...';
+  submitBtn.disabled = true;
+
+  const formData = new FormData();
+  formData.append('name',     nameEl.value.trim());
+  formData.append('email',    emailEl.value.trim());
+  formData.append('phone',    phoneEl.value.trim() || 'Not provided');
+  formData.append('company',  companyEl.value.trim() || 'Not provided');
+  formData.append('service',  serviceEl.value || 'Not selected');
+  formData.append('budget',   budget);
+  formData.append('timeline', timelineEl.value || 'Not selected');
+  formData.append('message',  msgEl.value.trim() || 'No message');
+  formData.append('_subject', '🔥 New Client Inquiry — Veltro');
+
+  try {
+    const res = await fetch('https://formspree.io/f/xnjrkwny', {
+      method: 'POST',
+      body: formData,
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if(res.ok) {
+      document.querySelectorAll('#form-wrap input,#form-wrap select,#form-wrap textarea,#form-wrap .pill,#form-wrap .btn-submit,.submit-row,.form-divider,.info-strip').forEach(el => el.style.display='none');
+      document.querySelectorAll('#form-wrap .form-group').forEach(el => el.style.display='none');
+      document.getElementById('success-msg').classList.add('show');
+    } else {
+      submitBtn.textContent = 'Try Again';
+      submitBtn.disabled = false;
+      alert('Something went wrong. Please email us at hello@veltro.co');
+    }
+  } catch(err) {
+    submitBtn.textContent = 'Try Again';
+    submitBtn.disabled = false;
+    alert('Network error. Please try again or WhatsApp us directly.');
+  }
+}
+
+// ── THREE.JS — HERO ───────────────────────────────────────
+let heroInitialized = false;
+let animFrameHero, animFrameCards;
+
+function initHomeThree() {
+  if(heroInitialized) return;
+  heroInitialized = true;
+
+  const heroCanvas = document.getElementById('three-canvas');
+  if(!heroCanvas) return;
+
+  const renderer = new THREE.WebGLRenderer({canvas: heroCanvas, antialias: true, alpha: true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(heroCanvas.clientWidth || 800, heroCanvas.clientHeight || 320);
+  renderer.setClearColor(0x000000, 0);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, (heroCanvas.clientWidth || 800) / (heroCanvas.clientHeight || 320), 0.1, 100);
+  camera.position.set(0, 0, 5);
+
+  const knotGeo = new THREE.TorusKnotGeometry(1.2, 0.35, 180, 24, 2, 3);
+  const knotMat = new THREE.MeshStandardMaterial({color:0xC9A84C, metalness:0.9, roughness:0.15, emissive:0x3A2A08, emissiveIntensity:0.3});
+  const knot = new THREE.Mesh(knotGeo, knotMat);
+  scene.add(knot);
+
+  const rings = [];
+  for(let i = 0; i < 3; i++) {
+    const rGeo = new THREE.TorusGeometry(1.8 + i * 0.7, 0.012, 8, 80);
+    const rMat = new THREE.MeshBasicMaterial({color:0x8A6E2F, transparent:true, opacity:0.35 - i * 0.08});
+    const ring = new THREE.Mesh(rGeo, rMat);
+    ring.rotation.x = Math.PI / 3 + i * 0.4;
+    ring.rotation.y = i * 0.6;
+    scene.add(ring);
+    rings.push(ring);
+  }
+
+  scene.add(new THREE.AmbientLight(0xfff8e8, 0.4));
+  const pl1 = new THREE.PointLight(0xC9A84C, 3, 12);
+  pl1.position.set(4, 3, 3);
+  scene.add(pl1);
+  const pl2 = new THREE.PointLight(0xfff0c0, 1.5, 10);
+  pl2.position.set(-4, -2, 2);
+  scene.add(pl2);
+
+  let isDrag = false, prevX = 0, prevY = 0, rotX = 0, rotY = 0;
+  heroCanvas.addEventListener('mousedown', e => { isDrag = true; prevX = e.clientX; prevY = e.clientY; });
+  window.addEventListener('mouseup', () => isDrag = false);
+  window.addEventListener('mousemove', e => {
+    if(!isDrag) return;
+    rotY += (e.clientX - prevX) * 0.008;
+    rotX += (e.clientY - prevY) * 0.008;
+    prevX = e.clientX; prevY = e.clientY;
+  });
+  heroCanvas.addEventListener('touchstart', e => { isDrag = true; prevX = e.touches[0].clientX; prevY = e.touches[0].clientY; }, {passive:true});
+  heroCanvas.addEventListener('touchend', () => isDrag = false);
+  heroCanvas.addEventListener('touchmove', e => {
+    if(!isDrag) return;
+    rotY += (e.touches[0].clientX - prevX) * 0.01;
+    rotX += (e.touches[0].clientY - prevY) * 0.01;
+    prevX = e.touches[0].clientX; prevY = e.touches[0].clientY;
+  }, {passive:true});
+
+  function animHero(t) {
+    animFrameHero = requestAnimationFrame(animHero);
+    const time = t * 0.001;
+    knot.rotation.x = rotX + time * 0.3;
+    knot.rotation.y = rotY + time * 0.4;
+    rings.forEach((r, i) => {
+      r.rotation.z = time * (0.15 + i * 0.08);
+      r.rotation.x = Math.PI / 3 + i * 0.4 + Math.sin(time * 0.2 + i) * 0.1;
+    });
+    pl1.position.x = Math.sin(time * 0.5) * 4;
+    pl1.position.y = Math.cos(time * 0.3) * 3;
+    renderer.render(scene, camera);
+  }
+  animHero(0);
+
+  // ── CARD SCENES ─────────────────────────────────────────
+  function makeCardScene(el, buildFn) {
+    const w = el.clientWidth || 320, h = el.clientHeight || 220;
+    const r = new THREE.WebGLRenderer({canvas: el, antialias: true, alpha: true});
+    r.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    r.setSize(w, h);
+    r.setClearColor(0x141210, 1);
+    const s = new THREE.Scene();
+    const c = new THREE.PerspectiveCamera(55, w / h, 0.1, 100);
+    c.position.set(0, 0, 4);
+    const objs = buildFn(s);
+    return {r, s, c, objs};
+  }
+
+  const mentalCanvas = document.getElementById('canvas-mental');
+  const mental = makeCardScene(mentalCanvas, s => {
+    s.add(new THREE.AmbientLight(0x8899cc, 0.5));
+    const pL = new THREE.PointLight(0x6688ff, 2, 10); pL.position.set(2,2,2); s.add(pL);
+    s.add(Object.assign(new THREE.PointLight(0xaaccff, 1, 8), {position: new THREE.Vector3(-2,-1,1)}));
+    const sphere = new THREE.Mesh(
+      new THREE.SphereGeometry(0.9, 64, 64),
+      new THREE.MeshStandardMaterial({color:0x3344aa, metalness:0.3, roughness:0.5, emissive:0x112255, emissiveIntensity:0.6})
+    );
+    s.add(sphere);
+    const orbs = [];
+    for(let i = 0; i < 12; i++) {
+      const orb = new THREE.Mesh(
+        new THREE.SphereGeometry(0.06 + Math.random()*0.06, 12, 12),
+        new THREE.MeshStandardMaterial({color:0x88aaff, emissive:0x4466cc, emissiveIntensity:0.8, roughness:0.2})
+      );
+      const phi = Math.random()*Math.PI*2, theta = Math.random()*Math.PI, rad = 1.5+Math.random()*0.8;
+      orb.position.set(Math.sin(theta)*Math.cos(phi)*rad, Math.cos(theta)*rad*0.6, Math.sin(theta)*Math.sin(phi)*rad);
+      orb.userData = {phi, theta, rad, speed:0.3+Math.random()*0.4, offset:Math.random()*Math.PI*2};
+      s.add(orb); orbs.push(orb);
+    }
+    return {sphere, orbs, pL};
+  });
+
+  const shapeCanvas = document.getElementById('canvas-shape');
+  const shapeScene = makeCardScene(shapeCanvas, s => {
+    s.add(new THREE.AmbientLight(0xfff0c0, 0.4));
+    const pL = new THREE.PointLight(0xC9A84C, 2.5, 10); pL.position.set(2,2,2); s.add(pL);
+    s.add(Object.assign(new THREE.PointLight(0xff8833, 1, 8), {position: new THREE.Vector3(-2,-1,1)}));
+    const curves = [];
+    for(let i = 0; i < 8; i++) {
+      const pts = Array.from({length:5}, () => new THREE.Vector3((Math.random()-.5)*4,(Math.random()-.5)*3,(Math.random()-.5)*2));
+      const geo = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 60, 0.018, 8, false);
+      const col = new THREE.Color().setHSL(0.08 + (i/8)*0.12, 0.9, 0.55);
+      const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({color:col, transparent:true, opacity:0.7}));
+      s.add(mesh); curves.push({mesh, pts});
+    }
+    const torus = new THREE.Mesh(
+      new THREE.TorusGeometry(0.8, 0.04, 12, 80),
+      new THREE.MeshStandardMaterial({color:0xC9A84C, metalness:0.9, roughness:0.1, emissive:0x3A2A00, emissiveIntensity:0.4})
+    );
+    s.add(torus);
+    return {curves, torus, pL};
+  });
+
+  function animCards(t) {
+    animFrameCards = requestAnimationFrame(animCards);
+    const time = t * 0.001;
+    mental.objs.sphere.rotation.y = time * 0.2;
+    mental.objs.orbs.forEach(orb => {
+      const d = orb.userData, a = time * d.speed + d.offset;
+      const phi2 = d.phi + Math.sin(a)*0.3, theta2 = d.theta + Math.cos(a*0.7)*0.2;
+      orb.position.set(Math.sin(theta2)*Math.cos(phi2)*d.rad, Math.cos(theta2)*d.rad*0.6, Math.sin(theta2)*Math.sin(phi2)*d.rad);
+    });
+    mental.objs.pL.intensity = 2 + Math.sin(time)*0.5;
+    mental.r.render(mental.s, mental.c);
+
+    shapeScene.objs.curves.forEach(({mesh, pts}, i) => {
+      const t2 = time * 0.3 + i;
+      pts.forEach((p, j) => { p.x += Math.sin(t2+j*1.3)*0.005; p.y += Math.cos(t2*0.7+j)*0.005; });
+      mesh.geometry.dispose();
+      mesh.geometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 60, 0.018, 8, false);
+    });
+    shapeScene.objs.torus.rotation.x = time * 0.4;
+    shapeScene.objs.torus.rotation.y = time * 0.6;
+    shapeScene.objs.pL.position.x = Math.sin(time*0.5)*2;
+    shapeScene.r.render(shapeScene.s, shapeScene.c);
+  }
+  animCards(0);
+
+  window.addEventListener('resize', () => {
+    const w = heroCanvas.clientWidth, h = heroCanvas.clientHeight;
+    if(w && h){ renderer.setSize(w,h); camera.aspect = w/h; camera.updateProjectionMatrix(); }
+  });
+}
+
+// Init on load
+initHomeThree();
+</script>
+</body>
+</html>
